@@ -7,38 +7,38 @@ import burgerImage from "@/assets/burger.jpg";
 import friesImage from "@/assets/fries.jpg";
 import sandwichImage from "@/assets/sandwich.jpg";
 import dessertImage from "@/assets/dessert.jpg";
+import logo from "@/assets/logo.png";
 
-const RestaurantMenu = () => {
+const Screen1 = () => {
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
       {/* Background decorative elements */}
-      <div className="absolute top-10 left-10 z-0">
-        <FoodCircle image={burgerImage} alt="Delicious Burger" className="opacity-20" />
+      <div className="absolute top-12 left-10 z-50">
+        <FoodCircle image={burgerImage} alt="Delicious Burger" className="opacity-80" />
       </div>
-      <div className="absolute top-20 right-20 z-0">
-        <FoodCircle image={friesImage} alt="Golden Fries" className="opacity-15" />
+      <div className="absolute top-20 right-10 z-0">
+        <FoodCircle image={friesImage} alt="Golden Fries" className="opacity-80 scale-125" />
       </div>
-      <div className="absolute bottom-20 left-20 z-0">
-        <FoodCircle image={sandwichImage} alt="Gourmet Sandwich" className="opacity-20" />
+      <div className="absolute bottom-20 left-0 z-0">
+        <FoodCircle image={sandwichImage} alt="Gourmet Sandwich" className="opacity-80 scale-90" />
       </div>
-      <div className="absolute bottom-10 right-10 z-0">
-        <FoodCircle image={dessertImage} alt="Chocolate Dessert" className="opacity-15" />
+      <div className="absolute bottom-0 right-0 z-0 ">
+        <FoodCircle image={dessertImage} alt="Chocolate Dessert" className="opacity-80 scale-75" />
       </div>
 
       <div className="relative z-10 container mx-auto px-4 py-12">
         {/* Header */}
         <div className="text-center mb-12">
           <div className="inline-block">
-            <h1 className="text-6xl font-bold mb-2">
-              <span className="text-restaurant-gold italic">Menu</span>
-            </h1>
-            <h2 className="text-4xl font-bold text-foreground uppercase tracking-widest">
-              RESTAURANT
+            <img 
+              src={logo} 
+              alt="Toticone Logo" 
+              className="h-28 w-auto mx-auto mb-2"
+            />
+            <h2 className="text-3xl font-bold text-foreground uppercase tracking-widest">
+              Neapolitan Food
             </h2>
           </div>
-          <p className="text-muted-foreground mt-4 max-w-md mx-auto">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed diam nonumy nibh.
-          </p>
           <div className="flex justify-center mt-4 space-x-2">
             {[...Array(5)].map((_, i) => (
               <div key={i} className="w-3 h-3 rounded-full bg-restaurant-orange"></div>
@@ -47,7 +47,7 @@ const RestaurantMenu = () => {
         </div>
 
         {/* Menu Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-5xl mx-auto">
           {/* Burgers Section */}
           <MenuSection title="Burgers">
             <MenuItem 
@@ -189,4 +189,4 @@ const RestaurantMenu = () => {
   );
 };
 
-export default RestaurantMenu;
+export default Screen1;

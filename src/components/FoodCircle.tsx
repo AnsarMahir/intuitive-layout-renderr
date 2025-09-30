@@ -7,7 +7,7 @@ interface FoodCircleProps {
 export const FoodCircle = ({ image, alt, className = "" }: FoodCircleProps) => {
   return (
     <div className={`relative ${className}`}>
-      <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-restaurant-orange shadow-orange">
+      <div className="w-64 h-64 rounded-full overflow-hidden border-4 border-restaurant-orange shadow-orange">
         <img 
           src={image} 
           alt={alt}
