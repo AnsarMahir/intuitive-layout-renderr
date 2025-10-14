@@ -7,7 +7,7 @@ import Screen from "./pages/Screen";
 import Screen1 from "./pages/Screen1";
 import Screen2 from "./pages/Screen2";
 import Screen3 from "./pages/Screen3";
-import Screen4 from "./pages/Screen4";
+import Screen4 from "./pages/Scren4";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
