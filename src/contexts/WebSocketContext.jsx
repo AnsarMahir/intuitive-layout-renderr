@@ -1,5 +1,5 @@
-// hooks/useWebSocket.js
-import { useEffect, useRef, useCallback } from 'react';
+// contexts/WebSocketContext.jsx
+import { createContext, useContext, useEffect, useRef, useCallback } from 'react';
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 
@@ -12,91 +12,99 @@ const baseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:8082";
 const authUsername = import.meta.env.VITE_API_USERNAME;
 const authPassword = import.meta.env.VITE_API_PASSWORD;
 
-export const useWebSocket = (onProductUpdate, onProductDelete, onExtraUpdate, onExtraDelete) => {
+const WebSocketContext = createContext(null);
+
+export const useWebSocketContext = () => {
+  const context = useContext(WebSocketContext);
+  if (!context) {
+    throw new Error('useWebSocketContext must be used within WebSocketProvider');
+  }
+  return context;
+};
+
+export const WebSocketProvider = ({ children }) => {
   const clientRef = useRef(null);
   const isConnectedRef = useRef(false);
+  const subscribersRef = useRef({
+    productUpdate: new Set(),
+    productDelete: new Set(),
+    extraUpdate: new Set(),
+    extraDelete: new Set(),
+  });
+
+  const subscribe = useCallback((type, callback) => {
+    subscribersRef.current[type].add(callback);
+    
+    // Return unsubscribe function
+    return () => {
+      subscribersRef.current[type].delete(callback);
+    };
+  }, []);
+
+  const notifySubscribers = useCallback((type, data) => {
+    subscribersRef.current[type].forEach(callback => callback(data));
+  }, []);
 
   const connect = useCallback(() => {
-    // Create connection headers with basic auth if credentials are provided
+    if (clientRef.current?.active) {
+      console.log('WebSocket already connected');
+      return;
+    }
+
     const connectHeaders = {};
     if (authUsername && authPassword) {
       const credentials = btoa(`${authUsername}:${authPassword}`);
       connectHeaders['Authorization'] = `Basic ${credentials}`;
     }
 
-    // Create a new STOMP client
     const client = new Client({
-      // Use SockJS as the WebSocket implementation
       webSocketFactory: () => new SockJS(`${baseUrl}/ws`),
-      
-      // Connection headers (includes auth)
       connectHeaders: connectHeaders,
-      
-      // Connection timeout
       connectionTimeout: 5000,
-      
-      // Heartbeat settings (in milliseconds)
       heartbeatIncoming: 10000,
       heartbeatOutgoing: 10000,
-      
-      // Reconnect settings
       reconnectDelay: 5000,
       
-      // Debug function
       debug: (str) => {
         console.log('STOMP Debug:', str);
       },
       
-      // On successful connection
       onConnect: () => {
-        console.log('WebSocket Connected');
+        console.log('WebSocket Connected (Shared)');
         isConnectedRef.current = true;
         
-        // Subscribe to product updates
+        // Subscribe to all topics once
         client.subscribe('/topic/products/update', (message) => {
           const product = JSON.parse(message.body);
           console.log('Product Update Received:', product);
-          if (onProductUpdate) {
-            onProductUpdate(product);
-          }
+          notifySubscribers('productUpdate', product);
         });
         
-        // Subscribe to product deletions
         client.subscribe('/topic/products/delete', (message) => {
           const productId = parseInt(message.body);
           console.log('Product Delete Received:', productId);
-          if (onProductDelete) {
-            onProductDelete(productId);
-          }
+          notifySubscribers('productDelete', productId);
         });
         
-        // Subscribe to extra updates
         client.subscribe('/topic/extras/update', (message) => {
           const extra = JSON.parse(message.body);
           console.log('Extra Update Received:', extra);
-          if (onExtraUpdate) {
-            onExtraUpdate(extra);
-          }
+          notifySubscribers('extraUpdate', extra);
         });
         
-        // Subscribe to extra deletions
         client.subscribe('/topic/extras/delete', (message) => {
           const extraId = parseInt(message.body);
           console.log('Extra Delete Received:', extraId);
-          if (onExtraDelete) {
-            onExtraDelete(extraId);
-          }
+          notifySubscribers('extraDelete', extraId);
         });
       },
       
-      // On connection error
       onStompError: (frame) => {
         console.error('STOMP Error:', frame.headers['message']);
         console.error('Additional details:', frame.body);
         isConnectedRef.current = false;
       },
       
-      // On WebSocket close
       onWebSocketClose: () => {
         console.log('WebSocket Disconnected');
         isConnectedRef.current = false;
@@ -105,7 +113,7 @@ export const useWebSocket = (onProductUpdate, onProductDelete, onExtraUpdate, on
 
     clientRef.current = client;
     client.activate();
-  }, [onProductUpdate, onProductDelete, onExtraUpdate, onExtraDelete]);
+  }, [notifySubscribers]);
 
   const disconnect = useCallback(() => {
     if (clientRef.current) {
@@ -118,15 +126,21 @@ export const useWebSocket = (onProductUpdate, onProductDelete, onExtraUpdate, on
   useEffect(() => {
     connect();
     
-    // Cleanup on unmount
     return () => {
       disconnect();
     };
   }, [connect, disconnect]);
 
-  return {
+  const value = {
     isConnected: isConnectedRef.current,
+    subscribe,
     disconnect,
     reconnect: connect,
   };
+
+  return (
+    <WebSocketContext.Provider value={value}>
+      {children}
+    </WebSocketContext.Provider>
+  );
 };

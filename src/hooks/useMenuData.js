@@ -1,12 +1,11 @@
 // hooks/useMenuData.js
 import { useState, useEffect, useCallback } from "react";
-import { useWebSocket } from "./useWebSocket";
+import { useWebSocketContext } from "@/contexts/WebSocketContext";
 
 const baseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:8082";
 const authUsername = import.meta.env.VITE_API_USERNAME;
 const authPassword = import.meta.env.VITE_API_PASSWORD;
 
-// Helper function to create auth headers
 const getAuthHeaders = () => {
   const headers = {
     'Content-Type': 'application/json'
@@ -24,8 +23,8 @@ export const useMenuData = (categories = []) => {
   const [menuData, setMenuData] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { subscribe } = useWebSocketContext();
 
-  // Initial fetch
   const fetchMenuData = useCallback(async () => {
     try {
       setLoading(true);
@@ -61,20 +60,16 @@ export const useMenuData = (categories = []) => {
     }
   }, [categories.join(",")]);
 
-  // Handle product update from WebSocket
   const handleProductUpdate = useCallback((updatedProduct) => {
     setMenuData(prev => {
       const newData = { ...prev };
       
-      // Find which category this product belongs to
       Object.keys(newData).forEach(category => {
         const productIndex = newData[category].findIndex(p => p.id === updatedProduct.id);
         
         if (productIndex !== -1) {
-          // Update existing product
           newData[category][productIndex] = updatedProduct;
         } else if (updatedProduct.category === category) {
-          // Add new product to the category
           newData[category] = [...newData[category], updatedProduct];
         }
       });
@@ -83,7 +78,6 @@ export const useMenuData = (categories = []) => {
     });
   }, []);
 
-  // Handle product delete from WebSocket
   const handleProductDelete = useCallback((productId) => {
     setMenuData(prev => {
       const newData = { ...prev };
@@ -96,7 +90,6 @@ export const useMenuData = (categories = []) => {
     });
   }, []);
 
-  // Handle extra update from WebSocket
   const handleExtraUpdate = useCallback((updatedExtra) => {
     setMenuData(prev => {
       const newData = { ...prev };
@@ -107,7 +100,6 @@ export const useMenuData = (categories = []) => {
             const extraIndex = product.extras.findIndex(e => e.id === updatedExtra.id);
             
             if (extraIndex !== -1) {
-              // Update existing extra
               const updatedExtras = [...product.extras];
               updatedExtras[extraIndex] = updatedExtra;
               return { ...product, extras: updatedExtras };
@@ -121,7 +113,6 @@ export const useMenuData = (categories = []) => {
     });
   }, []);
 
-  // Handle extra delete from WebSocket
   const handleExtraDelete = useCallback((extraId) => {
     setMenuData(prev => {
       const newData = { ...prev };
@@ -142,13 +133,20 @@ export const useMenuData = (categories = []) => {
     });
   }, []);
 
-  // Connect to WebSocket
-  useWebSocket(
-    handleProductUpdate,
-    handleProductDelete,
-    handleExtraUpdate,
-    handleExtraDelete
-  );
+  // Subscribe to WebSocket updates
+  useEffect(() => {
+    const unsubscribeProductUpdate = subscribe('productUpdate', handleProductUpdate);
+    const unsubscribeProductDelete = subscribe('productDelete', handleProductDelete);
+    const unsubscribeExtraUpdate = subscribe('extraUpdate', handleExtraUpdate);
+    const unsubscribeExtraDelete = subscribe('extraDelete', handleExtraDelete);
+
+    return () => {
+      unsubscribeProductUpdate();
+      unsubscribeProductDelete();
+      unsubscribeExtraUpdate();
+      unsubscribeExtraDelete();
+    };
+  }, [subscribe, handleProductUpdate, handleProductDelete, handleExtraUpdate, handleExtraDelete]);
 
   useEffect(() => {
     if (categories.length > 0) {
@@ -159,11 +157,11 @@ export const useMenuData = (categories = []) => {
   return { menuData, loading, error, refetch: fetchMenuData };
 };
 
-// Single category hook with WebSocket
 export const useSingleCategory = (category) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { subscribe } = useWebSocketContext();
 
   const fetchData = useCallback(async () => {
     try {
@@ -235,12 +233,19 @@ export const useSingleCategory = (category) => {
     }));
   }, []);
 
-  useWebSocket(
-    handleProductUpdate,
-    handleProductDelete,
-    handleExtraUpdate,
-    handleExtraDelete
-  );
+  useEffect(() => {
+    const unsubscribeProductUpdate = subscribe('productUpdate', handleProductUpdate);
+    const unsubscribeProductDelete = subscribe('productDelete', handleProductDelete);
+    const unsubscribeExtraUpdate = subscribe('extraUpdate', handleExtraUpdate);
+    const unsubscribeExtraDelete = subscribe('extraDelete', handleExtraDelete);
+
+    return () => {
+      unsubscribeProductUpdate();
+      unsubscribeProductDelete();
+      unsubscribeExtraUpdate();
+      unsubscribeExtraDelete();
+    };
+  }, [subscribe, handleProductUpdate, handleProductDelete, handleExtraUpdate, handleExtraDelete]);
 
   useEffect(() => {
     if (category) {
@@ -251,12 +256,12 @@ export const useSingleCategory = (category) => {
   return { data, loading, error, refetch: fetchData };
 };
 
-// Build Your Own hook with WebSocket
 export const useBuildYourOwn = (category = "Componi-Panino") => {
   const [data, setData] = useState(null);
   const [groupedExtras, setGroupedExtras] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { subscribe } = useWebSocketContext();
 
   const fetchData = useCallback(async () => {
     try {
@@ -346,7 +351,7 @@ export const useBuildYourOwn = (category = "Componi-Panino") => {
           acc[extra.type] = [];
         }
         acc[extra.type].push(extra);
-      return acc;
+        return acc;
       }, {});
       setGroupedExtras(grouped);
       
@@ -354,12 +359,17 @@ export const useBuildYourOwn = (category = "Componi-Panino") => {
     });
   }, []);
 
-  useWebSocket(
-    handleProductUpdate,
-    () => {}, // Product delete not relevant for single item
-    handleExtraUpdate,
-    handleExtraDelete
-  );
+  useEffect(() => {
+    const unsubscribeProductUpdate = subscribe('productUpdate', handleProductUpdate);
+    const unsubscribeExtraUpdate = subscribe('extraUpdate', handleExtraUpdate);
+    const unsubscribeExtraDelete = subscribe('extraDelete', handleExtraDelete);
+
+    return () => {
+      unsubscribeProductUpdate();
+      unsubscribeExtraUpdate();
+      unsubscribeExtraDelete();
+    };
+  }, [subscribe, handleProductUpdate, handleExtraUpdate, handleExtraDelete]);
 
   useEffect(() => {
     fetchData();
