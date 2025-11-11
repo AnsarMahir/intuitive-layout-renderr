@@ -9,7 +9,7 @@ import meatImage from "@/assets/meat.jpg";
 import logo from "@/assets/logo.png";
 
 const Screen1 = () => {
-  const { menuData, loading, error } = useMenuData(['Burgers', 'Sandwiches']);
+  const { menuData, loading, error } = useMenuData(['Burgers', 'Sandwiches', 'Fritture']);
 
   if (loading) {
     return (
@@ -58,32 +58,50 @@ const Screen1 = () => {
         <div className="text-center mb-12">
           <div className="inline-block">
             <img src={logo} alt="Toticone Logo" className="h-28 w-auto mx-auto mb-2" />
-            <h2 className="text-4xl font-bold text-foreground uppercase tracking-widest">
-              Neapolitan Food
-            </h2>
+           
           </div>
           <p className="text-muted-foreground mt-4 max-w-md mx-auto">GLI SPECIAL DI</p>
         </div>
 
-        <div className="grid grid-cols-1 gap-8 max-w-7xl mx-auto">
-          <MenuSection title="Burgers">
-            {menuData.Burgers?.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6">
-                {menuData.Burgers.map((item) => (
-                  <MenuItem 
-                    key={item.id}
-                    name={item.name}
-                    description={item.description}
-                    price={item.price.toFixed(2)}
-                  />
-                ))}
-              </div>
-            ) : (
-              <p className="text-muted-foreground text-center py-4">No burgers available</p>
-            )}
-          </MenuSection>
-
-          
+        <div className="grid grid-cols-2 gap-8 max-w-7xl mx-auto">
+          {/* First Two Columns */}
+          <div className="col-span-1 space-y-8">
+            <MenuSection title="Burgers">
+              {menuData.Burgers?.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-1 gap-x-6">
+                  {menuData.Burgers.map((item) => (
+                    <MenuItem 
+                      key={item.id}
+                      name={item.name}
+                      description={item.description}
+                      price={item.price.toFixed(2)}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <p className="text-muted-foreground text-center py-4">No burgers available</p>
+              )}
+            </MenuSection>
+          </div>
+            <div className="space-y-8 grid-cols-1">
+              {/* Sandwiches Section */}
+              <MenuSection title="Sandwiches">
+                {menuData.Sandwiches?.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6">
+                      {menuData.Sandwiches.map((item) => (
+                      <MenuItem 
+                          key={item.id}
+                          name={item.name}
+                          description={item.description}
+                          price={item.price.toFixed(2)}
+                      />
+                      ))}
+                  </div>
+                ) : (
+                  <p className="text-muted-foreground text-center py-4">No sandwiches available</p>
+                )}
+              </MenuSection>
+          </div>
         </div>
 
         

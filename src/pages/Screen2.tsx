@@ -13,7 +13,7 @@ import logo from "@/assets/logo.png";
 
 
 const Screen2 = () => {
-  const { menuData, loading, error } = useMenuData(['Porzioni', 'Fritture', 'Crostoni', 'Piadine', "LInsalatone"]);
+  const { menuData, loading, error } = useMenuData(['Porzioni', 'Fritture', 'Piadine', "LInsalatone"]);
   
   if (loading) {
     return (
@@ -67,13 +67,7 @@ const Screen2 = () => {
               alt="Toticone Logo" 
               className="h-28 w-auto mx-auto mb-2"
             />
-            <h2 className="text-4xl font-bold text-foreground uppercase tracking-widest">
-              Neapolitan Food
-            </h2>
           </div>
-          <p className="text-muted-foreground mt-4 max-w-md mx-auto">
-            GLI SPECIAL DI
-          </p>
         </div>
 
         {/* Menu Grid */}
@@ -99,46 +93,14 @@ const Screen2 = () => {
             )}
           </MenuSection>
 
-
-            {/* Fritture Section */}
-            <MenuSection title="Fritture">
-              {menuData.Fritture?.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6">
-                {menuData.Fritture.map((item) => (
-                  <MenuItem
-                    key={item.id}
-                    name={item.name}
-                    description={item.description}
-                    price={item.price.toFixed(2)}
-                  />
-                ))}
-              </div>
-            ) : (
-              <p className="text-muted-foreground text-center py-4">
-                No food items available
-              </p>
-            )}
-            </MenuSection>
+            
+            
           </div>
 
           
 
           {/* Third Column - Crostoni, Piadine & L'Insalatone */}
           <div className="space-y-8">
-            <MenuSection title="Crostoni">
-              {menuData.Crostoni?.length > 0 ? (
-              menuData.Crostoni.map((item) => (
-                <MenuItem 
-                  key={item.id}
-                  name={item.name}
-                  description={item.description}
-                  price={item.price.toFixed(2)}
-                />
-              ))
-            ) : (
-              <p className="text-muted-foreground text-center py-4">No burgers available</p>
-            )}
-            </MenuSection>
             <MenuSection title="Piadine">
               {menuData.Piadine?.length > 0 ? (
               menuData.Piadine.map((item) => (
@@ -153,6 +115,7 @@ const Screen2 = () => {
               <p className="text-muted-foreground text-center py-4">No Piadine available</p>
             )}
             </MenuSection>
+            
             <MenuSection title="L'Insalatone">
               {menuData.LInsalatone?.length > 0 ? (
               menuData.LInsalatone.map((item) => (
@@ -167,6 +130,7 @@ const Screen2 = () => {
               <p className="text-muted-foreground text-center py-4">No L'Insalatone available</p>
             )}
             </MenuSection>
+            
           </div>
         </div>
       </div>

@@ -11,7 +11,7 @@ export const MenuItem = ({ name, description, price }: MenuItemProps) => {
         <h3 className="text-xl font-semibold text-restaurant-orange mb-1">
           {name}
         </h3>
-        <p className="text-sm text-muted-foreground leading-relaxed">
+        <p className="text-sm text-muted-foreground leading-relaxed text-white">
           {description}
         </p>
       </div>
