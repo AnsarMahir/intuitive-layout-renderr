@@ -66,15 +66,9 @@ const Screen3 = () => {
               alt="Toticone Logo" 
               className="h-28 w-auto mx-auto mb-2"
             />
-            <h2 className="text-3xl font-bold text-foreground uppercase tracking-widest">
-              Neapolitan Food
-            </h2>
+            
           </div>
-          <div className="flex justify-center mt-4 space-x-2">
-            {[...Array(5)].map((_, i) => (
-              <div key={i} className="w-3 h-3 rounded-full bg-restaurant-orange"></div>
-            ))}
-          </div>
+          
         </div>
 
         {/* Menu Grid */}
