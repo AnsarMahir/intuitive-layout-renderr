@@ -1,15 +1,15 @@
-import { useMenuData } from "@/hooks/useMenuData";
+import { useMenuData, useScreenImages } from "@/hooks/useMenuData";
 import { MenuSection } from "@/components/MenuSection";
 import { MenuItem } from "@/components/MenuItem";
 import { FoodCircle } from "@/components/FoodCircle";
-import burgerImage from "@/assets/burger.jpg";
-import friesImage from "@/assets/fries.jpg";
-import sandwichImage from "@/assets/sandwich.jpg";
-import meatImage from "@/assets/meat.jpg";
 import logo from "@/assets/logo.png";
 
 const Screen1 = () => {
-  const { menuData, loading, error } = useMenuData(['Burgers', 'Sandwiches', 'Fritture']);
+  const { menuData, loading: menuLoading, error: menuError } = useMenuData(['Burgers', 'Sandwiches', 'Fritture']);
+  const { images, loading: imagesLoading, error: imagesError } = useScreenImages(1, 4);
+
+  const loading = menuLoading || imagesLoading;
+  const error = menuError || imagesError;
 
   if (loading) {
     return (
@@ -40,31 +40,37 @@ const Screen1 = () => {
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
-      {/* Background decorative elements */}
-      <div className="absolute top-12 left-10 z-0">
-        <FoodCircle image={burgerImage} alt="Delicious Burger" className="opacity-80" />
-      </div>
-      <div className="absolute top-20 right-10 z-0">
-        <FoodCircle image={friesImage} alt="Golden Fries" className="opacity-80 scale-125" />
-      </div>
-      <div className="absolute bottom-20 left-0 z-0">
-        <FoodCircle image={sandwichImage} alt="Gourmet Sandwich" className="opacity-80 scale-90" />
-      </div>
-      <div className="absolute bottom-0 right-0 z-0">
-        <FoodCircle image={meatImage} alt="Chocolate Dessert" className="opacity-80 scale-75" />
-      </div>
+      {/* Background decorative elements with dynamic images */}
+      {images.S1I1 && (
+        <div className="absolute top-12 left-10 z-0">
+          <FoodCircle image={images.S1I1} alt="Delicious Burger" className="opacity-80" />
+        </div>
+      )}
+      {images.S1I2 && (
+        <div className="absolute top-20 right-10 z-0">
+          <FoodCircle image={images.S1I2} alt="Golden Fries" className="opacity-80 scale-125" />
+        </div>
+      )}
+      {images.S1I3 && (
+        <div className="absolute bottom-20 left-0 z-0">
+          <FoodCircle image={images.S1I3} alt="Gourmet Sandwich" className="opacity-80 scale-90" />
+        </div>
+      )}
+      {images.S1I4 && (
+        <div className="absolute bottom-0 right-0 z-0">
+          <FoodCircle image={images.S1I4} alt="Chocolate Dessert" className="opacity-80 scale-75" />
+        </div>
+      )}
 
       <div className="relative z-10 container mx-auto px-4 py-0">
         <div className="text-center mb-12">
           <div className="inline-block">
             <img src={logo} alt="Toticone Logo" className="h-28 w-auto mx-auto mb-2" />
-           
           </div>
           <p className="text-muted-foreground mt-4 max-w-md mx-auto">GLI SPECIAL DI</p>
         </div>
 
         <div className="grid grid-cols-2 gap-8 max-w-7xl mx-auto">
-          {/* First Two Columns */}
           <div className="col-span-1 space-y-8">
             <MenuSection title="Burgers">
               {menuData.Burgers?.length > 0 ? (
@@ -83,30 +89,25 @@ const Screen1 = () => {
               )}
             </MenuSection>
           </div>
-            <div className="space-y-8 grid-cols-1">
-              {/* Sandwiches Section */}
-              <MenuSection title="Sandwiches">
-                {menuData.Sandwiches?.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6">
-                      {menuData.Sandwiches.map((item) => (
-                      <MenuItem 
-                          key={item.id}
-                          name={item.name}
-                          description={item.description}
-                          price={item.price.toFixed(2)}
-                      />
-                      ))}
-                  </div>
-                ) : (
-                  <p className="text-muted-foreground text-center py-4">No sandwiches available</p>
-                )}
-              </MenuSection>
+          <div className="space-y-8 grid-cols-1">
+            <MenuSection title="Sandwiches">
+              {menuData.Sandwiches?.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6">
+                  {menuData.Sandwiches.map((item) => (
+                    <MenuItem 
+                      key={item.id}
+                      name={item.name}
+                      description={item.description}
+                      price={item.price.toFixed(2)}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <p className="text-muted-foreground text-center py-4">No sandwiches available</p>
+              )}
+            </MenuSection>
           </div>
         </div>
-
-        
-
-
       </div>
     </div>
   );
