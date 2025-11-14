@@ -377,3 +377,57 @@ export const useBuildYourOwn = (category = "Componi-Panino") => {
 
   return { data, groupedExtras, loading, error, refetch: fetchData };
 };
+
+export const useScreenImages = (screenNumber, imageCount = 4) => {
+  const [images, setImages] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const fetchImages = useCallback(async () => {
+    try {
+      setLoading(true);
+      const imagePromises = [];
+      
+      for (let i = 1; i <= imageCount; i++) {
+        const imageKey = `S${screenNumber}I${i}`;
+        imagePromises.push(
+          fetch(`${baseUrl}/api/uploads/images/${imageKey}`, {
+            headers: getAuthHeaders()
+          })
+            .then(res => {
+              if (!res.ok) throw new Error(`Failed to fetch ${imageKey}`);
+              return res.blob();
+            })
+            .then(blob => ({ key: imageKey, url: URL.createObjectURL(blob) }))
+        );
+      }
+
+      const results = await Promise.all(imagePromises);
+      const imagesObject = results.reduce((acc, { key, url }) => {
+        acc[key] = url;
+        return acc;
+      }, {});
+
+      setImages(imagesObject);
+      setError(null);
+    } catch (err) {
+      setError(err.message);
+      console.error("Error fetching images:", err);
+    } finally {
+      setLoading(false);
+    }
+  }, [screenNumber, imageCount]);
+
+  useEffect(() => {
+    fetchImages();
+    
+    // Cleanup: revoke object URLs when component unmounts
+    return () => {
+      Object.values(images).forEach(url => {
+        if (url) URL.revokeObjectURL(url);
+      });
+    };
+  }, [fetchImages]);
+
+  return { images, loading, error, refetch: fetchImages };
+};

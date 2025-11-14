@@ -1,20 +1,20 @@
-import { useMenuData } from "@/hooks/useMenuData";
+import { useMenuData, useScreenImages } from "@/hooks/useMenuData";
 import { MenuSection } from "@/components/MenuSection";
 import { MenuItem } from "@/components/MenuItem";
 import { FoodCircle } from "@/components/FoodCircle";
 
 
 // Import food images
-import Porzioni from "@/assets/porzioni.jpg";
-import Fritture from "@/assets/fritture.jpg";
-import Beef from "@/assets/beef.jpg";
-import dessertImage from "@/assets/dessert.jpg";
 import logo from "@/assets/logo.png";
 
 
 const Screen2 = () => {
-  const { menuData, loading, error } = useMenuData(['Porzioni', 'Fritture', 'Piadine', "LInsalatone"]);
-  
+  const { menuData, menuLoading, menuError } = useMenuData(['Porzioni', 'Fritture', 'Piadine', "LInsalatone"]);
+  const { images, loading: imagesLoading, error: imagesError } = useScreenImages(2, 4);
+
+  const loading = menuLoading || imagesLoading;
+  const error = menuError || imagesError;
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -45,18 +45,27 @@ const Screen2 = () => {
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
       {/* Background decorative elements */}
-      <div className="absolute top-12 left-10 z-0">
-        <FoodCircle image={Porzioni} alt="Delicious Burger" className="opacity-80" />
-      </div>
-      <div className="absolute top-20 right-10 z-0">
-        <FoodCircle image={Fritture} alt="Golden Fries" className="opacity-80 scale-125" />
-      </div>
-      <div className="absolute bottom-20 left-0 z-0">
-        <FoodCircle image={Beef} alt="Gourmet Sandwich" className="opacity-80 scale-90" />
-      </div>
-      <div className="absolute bottom-0 right-0 z-0 ">
-        <FoodCircle image={dessertImage} alt="Chocolate Dessert" className="opacity-80 scale-75" />
-      </div>
+      {images.S2I1 && (
+        <div className="absolute top-12 left-10 z-0">
+          <FoodCircle image={images.S2I1} alt="Delicious Burger" className="opacity-80" />
+        </div>
+      )}
+      {images.S2I2 && (
+        <div className="absolute top-20 right-10 z-0">
+          <FoodCircle image={images.S2I2} alt="Golden Fries" className="opacity-80 scale-125" />
+        </div>
+      )}
+      
+      {images.S2I3 && (
+        <div className="absolute bottom-20 left-0 z-0">
+          <FoodCircle image={images.S2I3} alt="Gourmet Sandwich" className="opacity-80 scale-90" />
+        </div>
+      )}
+      {images.S2I4 && (
+        <div className="absolute bottom-0 right-0 z-0 ">
+          <FoodCircle image={images.S2I4} alt="Chocolate Dessert" className="opacity-80 scale-75" />
+        </div>
+      )}
 
       <div className="relative z-10 container mx-auto px-4 py-0">
         {/* Header */}
