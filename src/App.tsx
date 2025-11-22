@@ -4,6 +4,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { WebSocketProvider } from "@/contexts/WebSocketContext";
+import { UtilitySettingsProvider } from '@/contexts/UtilitySettingsContext';
+
 import Screen from "./pages/Screen";
 import Screen1 from "./pages/Screen1";
 import Screen2 from "./pages/Screen2";
@@ -17,6 +19,8 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <WebSocketProvider>
+              <UtilitySettingsProvider>
+
         <Toaster />
         <Sonner />
         <BrowserRouter>
@@ -30,6 +34,8 @@ const App = () => (
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
+              </UtilitySettingsProvider>
+
       </WebSocketProvider>
     </TooltipProvider>
   </QueryClientProvider>

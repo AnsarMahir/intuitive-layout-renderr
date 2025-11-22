@@ -1,19 +1,19 @@
-import { useMenuData, useScreenImages } from "@/hooks/useMenuData";
+import { useMenuData, useScreenImages, useLogo, useUtilitySettings } from "@/hooks/useMenuData";
 import { MenuSection } from "@/components/MenuSection";
 import { MenuItem } from "@/components/MenuItem";
 import { FoodCircle } from "@/components/FoodCircle";
-
-
-// Import food images
-import logo from "@/assets/logo.png";
-
+import defaultLogo from "@/assets/logo.png";
 
 const Screen2 = () => {
-  const { menuData, menuLoading, menuError } = useMenuData(['Porzioni', 'Fritture', 'Piadine', "LInsalatone"]);
+  // Use category IDs: 3 for Porzioni, 6 for Piadine, 7 for LInsalatone
+  const categoryIds = [3, 6, 7];
+  const { menuData, loading: menuLoading, error: menuError, categoryNames } = useMenuData(categoryIds);
   const { images, loading: imagesLoading, error: imagesError } = useScreenImages(2, 4);
+  const { logoUrl, loading: logoLoading, error: logoError } = useLogo();
+  const { bgColor, loading: utilityLoading, error: utilityError } = useUtilitySettings();
 
-  const loading = menuLoading || imagesLoading;
-  const error = menuError || imagesError;
+  const loading = menuLoading || imagesLoading || logoLoading || utilityLoading;
+  const error = menuError || imagesError || logoError || utilityError;
 
   if (loading) {
     return (
@@ -42,8 +42,16 @@ const Screen2 = () => {
     );
   }
 
+  // Get category names from the mapping
+  const porzioniCategoryName = categoryNames[3] || "Porzioni";
+  const piadineCategoryName = categoryNames[6] || "Piadine";
+  const insalatoneCategoryName = categoryNames[7] || "LInsalatone";
+
   return (
-    <div className="min-h-screen bg-background relative overflow-hidden">
+    <div 
+      className="min-h-screen relative overflow-hidden"
+      style={{ backgroundColor: bgColor.color }}
+    >
       {/* Background decorative elements */}
       {images.S2I1 && (
         <div className="absolute top-12 left-10 z-0">
@@ -72,8 +80,8 @@ const Screen2 = () => {
         <div className="text-center mb-12">
           <div className="inline-block">
             <img 
-              src={logo} 
-              alt="Toticone Logo" 
+              src={logoUrl || defaultLogo} 
+              alt="Logo" 
               className="h-28 w-auto mx-auto mb-2"
             />
           </div>
@@ -83,63 +91,57 @@ const Screen2 = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
           {/* First Two Columns - Porzioni */}
           <div className="lg:col-span-2 space-y-8">
-            <MenuSection title="Porzioni">
-            {menuData.Porzioni?.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6">
-                {menuData.Porzioni.map((item) => (
-                  <MenuItem
+            <MenuSection title={porzioniCategoryName}>
+              {menuData[porzioniCategoryName]?.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6">
+                  {menuData[porzioniCategoryName].map((item) => (
+                    <MenuItem
+                      key={item.id}
+                      name={item.name}
+                      description={item.description}
+                      price={item.price.toFixed(2)}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <p className="text-muted-foreground text-center py-4">
+                  No food items available
+                </p>
+              )}
+            </MenuSection>
+          </div>
+
+          {/* Third Column - Piadine & L'Insalatone */}
+          <div className="space-y-8">
+            <MenuSection title={piadineCategoryName}>
+              {menuData[piadineCategoryName]?.length > 0 ? (
+                menuData[piadineCategoryName].map((item) => (
+                  <MenuItem 
                     key={item.id}
                     name={item.name}
                     description={item.description}
                     price={item.price.toFixed(2)}
                   />
-                ))}
-              </div>
-            ) : (
-              <p className="text-muted-foreground text-center py-4">
-                No food items available
-              </p>
-            )}
-          </MenuSection>
-
-            
-            
-          </div>
-
-          
-
-          {/* Third Column - Crostoni, Piadine & L'Insalatone */}
-          <div className="space-y-8">
-            <MenuSection title="Piadine">
-              {menuData.Piadine?.length > 0 ? (
-              menuData.Piadine.map((item) => (
-                <MenuItem 
-                  key={item.id}
-                  name={item.name}
-                  description={item.description}
-                  price={item.price.toFixed(2)}
-                />
-              ))
-            ) : (
-              <p className="text-muted-foreground text-center py-4">No Piadine available</p>
-            )}
+                ))
+              ) : (
+                <p className="text-muted-foreground text-center py-4">No items available</p>
+              )}
             </MenuSection>
             
-            <MenuSection title="L'Insalatone">
-              {menuData.LInsalatone?.length > 0 ? (
-              menuData.LInsalatone.map((item) => (
-                <MenuItem 
-                  key={item.id}
-                  name={item.name}
-                  description={item.description}
-                  price={item.price.toFixed(2)}
-                />
-              ))
-            ) : (
-              <p className="text-muted-foreground text-center py-4">No L'Insalatone available</p>
-            )}
+            <MenuSection title={insalatoneCategoryName}>
+              {menuData[insalatoneCategoryName]?.length > 0 ? (
+                menuData[insalatoneCategoryName].map((item) => (
+                  <MenuItem 
+                    key={item.id}
+                    name={item.name}
+                    description={item.description}
+                    price={item.price.toFixed(2)}
+                  />
+                ))
+              ) : (
+                <p className="text-muted-foreground text-center py-4">No items available</p>
+              )}
             </MenuSection>
-            
           </div>
         </div>
       </div>

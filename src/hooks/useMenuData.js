@@ -19,8 +19,100 @@ const getAuthHeaders = () => {
   return headers;
 };
 
-export const useMenuData = (categories = []) => {
+// New hook to fetch category name by ID
+export const useCategoryName = (categoryId) => {
+  const [name, setName] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchCategoryName = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(
+          `${baseUrl}/api/products/category/getname/${categoryId}`,
+          { headers: getAuthHeaders() }
+        );
+
+        if (!response.ok) {
+          throw new Error(`Failed to fetch category name for ID ${categoryId}`);
+        }
+
+        const text = await response.text();
+        let categoryName;
+        try {
+          // Try to parse as JSON
+          const data = JSON.parse(text);
+          categoryName = data.name || data;
+        } catch {
+          // If not JSON, use as plain text
+          categoryName = text;
+        }
+        setName(categoryName);
+        setError(null);
+      } catch (err) {
+        setError(err.message);
+        console.error(`Error fetching category name for ID ${categoryId}:`, err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (categoryId) {
+      fetchCategoryName();
+    }
+  }, [categoryId]);
+
+  return { name, loading, error };
+};
+
+// New hook to fetch logo
+export const useLogo = () => {
+  const [logoUrl, setLogoUrl] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchLogo = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(
+          `${baseUrl}/api/uploads/logo`,
+          { headers: getAuthHeaders() }
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch logo");
+        }
+
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        setLogoUrl(url);
+        setError(null);
+      } catch (err) {
+        setError(err.message);
+        console.error("Error fetching logo:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchLogo();
+
+    // Cleanup
+    return () => {
+      if (logoUrl) {
+        URL.revokeObjectURL(logoUrl);
+      }
+    };
+  }, []);
+
+  return { logoUrl, loading, error };
+};
+
+export const useMenuData = (categoryIds = []) => {
   const [menuData, setMenuData] = useState({});
+  const [categoryNames, setCategoryNames] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { subscribe } = useWebSocketContext();
@@ -29,13 +121,51 @@ export const useMenuData = (categories = []) => {
     try {
       setLoading(true);
 
-      const fetchPromises = categories.map(category =>
-        fetch(`${baseUrl}/api/products/category/${category}`, {
+      // First, fetch all category names
+      const namePromises = categoryIds.map(id =>
+        fetch(`${baseUrl}/api/products/category/getname/${id}`, {
           headers: getAuthHeaders()
         })
       );
 
-      const responses = await Promise.all(fetchPromises);
+      const nameResponses = await Promise.all(namePromises);
+      
+      const failedNameResponse = nameResponses.find(res => !res.ok);
+      if (failedNameResponse) {
+        throw new Error("Failed to fetch category names");
+      }
+
+      // Handle both JSON and plain text responses
+      const nameResults = await Promise.all(
+        nameResponses.map(async (res) => {
+          const text = await res.text();
+          try {
+            // Try to parse as JSON first
+            return JSON.parse(text);
+          } catch {
+            // If not JSON, return as plain text
+            return text;
+          }
+        })
+      );
+      
+      // Map IDs to names
+      const idToName = {};
+      categoryIds.forEach((id, index) => {
+        const nameData = nameResults[index];
+        idToName[id] = typeof nameData === 'string' ? nameData : nameData.name;
+      });
+      
+      setCategoryNames(idToName);
+
+      // Then fetch products using the category names
+      const productPromises = Object.values(idToName).map(categoryName =>
+        fetch(`${baseUrl}/api/products/category/${categoryName}`, {
+          headers: getAuthHeaders()
+        })
+      );
+
+      const responses = await Promise.all(productPromises);
 
       const failedResponse = responses.find(res => !res.ok);
       if (failedResponse) {
@@ -46,8 +176,8 @@ export const useMenuData = (categories = []) => {
       const dataResults = await Promise.all(dataPromises);
 
       const data = {};
-      categories.forEach((category, index) => {
-        data[category] = dataResults[index];
+      Object.values(idToName).forEach((categoryName, index) => {
+        data[categoryName] = dataResults[index];
       });
 
       setMenuData(data);
@@ -58,7 +188,7 @@ export const useMenuData = (categories = []) => {
     } finally {
       setLoading(false);
     }
-  }, [categories.join(",")]);
+  }, [categoryIds.join(",")]);
 
   const handleProductUpdate = useCallback((updatedProduct) => {
     setMenuData(prev => {
@@ -149,12 +279,12 @@ export const useMenuData = (categories = []) => {
   }, [subscribe, handleProductUpdate, handleProductDelete, handleExtraUpdate, handleExtraDelete]);
 
   useEffect(() => {
-    if (categories.length > 0) {
+    if (categoryIds.length > 0) {
       fetchMenuData();
     }
-  }, [categories.join(","), fetchMenuData]);
+  }, [categoryIds.join(","), fetchMenuData]);
 
-  return { menuData, loading, error, refetch: fetchMenuData };
+  return { menuData, loading, error, refetch: fetchMenuData, categoryNames };
 };
 
 export const useSingleCategory = (category) => {
@@ -430,4 +560,64 @@ export const useScreenImages = (screenNumber, imageCount = 4) => {
   }, [fetchImages]);
 
   return { images, loading, error, refetch: fetchImages };
+};
+
+// New hook to fetch utility settings
+export const useUtilitySettings = () => {
+  const [fontTopic, setFontTopic] = useState({ size: 20 }); // Default size
+  const [fontDesc, setFontDesc] = useState({ size: 14 }); // Default size
+  const [bgColor, setBgColor] = useState({ color: "#000000" }); // Default color
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchUtilitySettings = async () => {
+      try {
+        setLoading(true);
+
+        // Fetch all utility settings in parallel
+        const [topicRes, descRes, bgRes] = await Promise.all([
+          fetch(`${baseUrl}/api/utility/get`, {
+            method: 'POST',
+            headers: getAuthHeaders(),
+            body: JSON.stringify({ name: "FONTTOPIC" })
+          }),
+          fetch(`${baseUrl}/api/utility/get`, {
+            method: 'POST',
+            headers: getAuthHeaders(),
+            body: JSON.stringify({ name: "FONTDESC" })
+          }),
+          fetch(`${baseUrl}/api/utility/get`, {
+            method: 'POST',
+            headers: getAuthHeaders(),
+            body: JSON.stringify({ name: "BGCOLOR" })
+          })
+        ]);
+
+        if (!topicRes.ok || !descRes.ok || !bgRes.ok) {
+          throw new Error("Failed to fetch utility settings");
+        }
+
+        const [topicData, descData, bgData] = await Promise.all([
+          topicRes.json(),
+          descRes.json(),
+          bgRes.json()
+        ]);
+
+        setFontTopic({ size: topicData.size || 20 });
+        setFontDesc({ size: descData.size || 14 });
+        setBgColor({ color: bgData.color || "#000000" });
+        setError(null);
+      } catch (err) {
+        setError(err.message);
+        console.error("Error fetching utility settings:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUtilitySettings();
+  }, []);
+
+  return { fontTopic, fontDesc, bgColor, loading, error };
 };

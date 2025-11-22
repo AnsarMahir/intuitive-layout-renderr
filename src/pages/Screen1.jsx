@@ -1,15 +1,19 @@
-import { useMenuData, useScreenImages } from "@/hooks/useMenuData";
+import { useMenuData, useScreenImages, useLogo, useUtilitySettings } from "@/hooks/useMenuData";
 import { MenuSection } from "@/components/MenuSection";
 import { MenuItem } from "@/components/MenuItem";
 import { FoodCircle } from "@/components/FoodCircle";
-import logo from "@/assets/logo.png";
+import defaultLogo from "@/assets/logo.png";
 
 const Screen1 = () => {
-  const { menuData, loading: menuLoading, error: menuError } = useMenuData(['Burgers', 'Sandwiches', 'Fritture']);
+  // Use category IDs instead of names
+  const categoryIds = [1, 2]; // 1 for Burgers, 2 for Sandwiches
+  const { menuData, loading: menuLoading, error: menuError, categoryNames } = useMenuData(categoryIds);
   const { images, loading: imagesLoading, error: imagesError } = useScreenImages(1, 4);
+  const { logoUrl, loading: logoLoading, error: logoError } = useLogo();
+  const { bgColor, loading: utilityLoading, error: utilityError } = useUtilitySettings();
 
-  const loading = menuLoading || imagesLoading;
-  const error = menuError || imagesError;
+  const loading = menuLoading || imagesLoading || logoLoading || utilityLoading;
+  const error = menuError || imagesError || logoError || utilityError;
 
   if (loading) {
     return (
@@ -38,8 +42,15 @@ const Screen1 = () => {
     );
   }
 
+  // Get category names from the mapping
+  const burgerCategoryName = categoryNames[1] || "Burgers";
+  const sandwichCategoryName = categoryNames[2] || "Sandwiches";
+
   return (
-    <div className="min-h-screen bg-background relative overflow-hidden">
+    <div 
+      className="min-h-screen relative overflow-hidden"
+      style={{ backgroundColor: bgColor.color }}
+    >
       {/* Background decorative elements with dynamic images */}
       {images.S1I1 && (
         <div className="absolute top-12 left-10 z-0">
@@ -65,17 +76,21 @@ const Screen1 = () => {
       <div className="relative z-10 container mx-auto px-4 py-0">
         <div className="text-center mb-12">
           <div className="inline-block">
-            <img src={logo} alt="Toticone Logo" className="h-28 w-auto mx-auto mb-2" />
+            <img 
+              src={logoUrl || defaultLogo} 
+              alt="Logo" 
+              className="h-28 w-auto mx-auto mb-2" 
+            />
           </div>
           <p className="text-muted-foreground mt-4 max-w-md mx-auto">GLI SPECIAL DI</p>
         </div>
 
         <div className="grid grid-cols-2 gap-8 max-w-7xl mx-auto">
           <div className="col-span-1 space-y-8">
-            <MenuSection title="Burgers">
-              {menuData.Burgers?.length > 0 ? (
+            <MenuSection title={burgerCategoryName}>
+              {menuData[burgerCategoryName]?.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-1 gap-x-6">
-                  {menuData.Burgers.map((item) => (
+                  {menuData[burgerCategoryName].map((item) => (
                     <MenuItem 
                       key={item.id}
                       name={item.name}
@@ -85,15 +100,15 @@ const Screen1 = () => {
                   ))}
                 </div>
               ) : (
-                <p className="text-muted-foreground text-center py-4">No burgers available</p>
+                <p className="text-muted-foreground text-center py-4">No items available</p>
               )}
             </MenuSection>
           </div>
           <div className="space-y-8 grid-cols-1">
-            <MenuSection title="Sandwiches">
-              {menuData.Sandwiches?.length > 0 ? (
+            <MenuSection title={sandwichCategoryName}>
+              {menuData[sandwichCategoryName]?.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6">
-                  {menuData.Sandwiches.map((item) => (
+                  {menuData[sandwichCategoryName].map((item) => (
                     <MenuItem 
                       key={item.id}
                       name={item.name}
@@ -103,7 +118,7 @@ const Screen1 = () => {
                   ))}
                 </div>
               ) : (
-                <p className="text-muted-foreground text-center py-4">No sandwiches available</p>
+                <p className="text-muted-foreground text-center py-4">No items available</p>
               )}
             </MenuSection>
           </div>

@@ -1,19 +1,19 @@
-import { useMenuData, useScreenImages } from "@/hooks/useMenuData";
+import { useMenuData, useScreenImages, useLogo, useUtilitySettings } from "@/hooks/useMenuData";
 import { MenuSection } from "@/components/MenuSection";
 import { MenuItem } from "@/components/MenuItem";
 import { FoodCircle } from "@/components/FoodCircle";
-import platterImage from "@/assets/platter.jpg";
-import seafoodPlatterImage from "@/assets/seafoodPlatter.jpg";
-import beefSandwichImage from "@/assets/beef-sandwich.jpg";
-import platter2Image from "@/assets/platter2.jpg";
-import logo from "@/assets/logo.png";
+import defaultLogo from "@/assets/logo.png";
 
 const Screen4 = () => {
-  const { menuData, menuLoading, menuError } = useMenuData(['Fritture', 'Platters','Crostoni']);
+  // Use category IDs: 10 for Platters, 4 for Fritture, 5 for Crostoni
+  const categoryIds = [10, 4, 5];
+  const { menuData, loading: menuLoading, error: menuError, categoryNames } = useMenuData(categoryIds);
   const { images, loading: imagesLoading, error: imagesError } = useScreenImages(4, 4);
+  const { logoUrl, loading: logoLoading, error: logoError } = useLogo();
+    const { bgColor, loading: utilityLoading, error: utilityError } = useUtilitySettings();
 
-  const loading = menuLoading || imagesLoading;
-  const error = menuError || imagesError;
+  const loading = menuLoading || imagesLoading || logoLoading || utilityLoading;
+  const error = menuError || imagesError || logoError || utilityError;
 
   if (loading) {
     return (
@@ -42,8 +42,16 @@ const Screen4 = () => {
     );
   }
 
+  // Get category names from the mapping
+  const plattersCategoryName = categoryNames[10] || "Platters";
+  const frittureCategoryName = categoryNames[4] || "Fritture";
+  const crostoniCategoryName = categoryNames[5] || "Crostoni";
+
   return (
-    <div className="min-h-screen bg-background relative overflow-hidden">
+    <div 
+      className="min-h-screen relative overflow-hidden"
+      style={{ backgroundColor: bgColor.color }}
+    >
       {/* Background decorative elements */}
       {images.S4I1 && (
         <div className="absolute top-12 left-10 z-0">
@@ -51,123 +59,92 @@ const Screen4 = () => {
         </div>
       )}
       {images.S4I2 && (
-      <div className="absolute top-20 right-10 z-0">
-        <FoodCircle image={images.S4I2} alt="Golden Fries" className="opacity-80 scale-125" />
-      </div>
+        <div className="absolute top-20 right-10 z-0">
+          <FoodCircle image={images.S4I2} alt="Golden Fries" className="opacity-80 scale-125" />
+        </div>
       )}
       {images.S4I3 && (
-      <div className="absolute bottom-20 left-0 z-0">
-        <FoodCircle image={images.S4I3} alt="Gourmet Sandwich" className="opacity-80 scale-90" />
-      </div>
+        <div className="absolute bottom-20 left-0 z-0">
+          <FoodCircle image={images.S4I3} alt="Gourmet Sandwich" className="opacity-80 scale-90" />
+        </div>
       )}
       {images.S4I4 && (
-      <div className="absolute bottom-0 right-0 z-0">
-        <FoodCircle image={images.S4I4} alt="Chocolate Dessert" className="opacity-80 scale-75" />
-      </div>
+        <div className="absolute bottom-0 right-0 z-0">
+          <FoodCircle image={images.S4I4} alt="Chocolate Dessert" className="opacity-80 scale-75" />
+        </div>
       )}
+      
       <div className="relative z-10 container mx-auto px-4 py-0">
         <div className="text-center mb-12">
           <div className="inline-block">
-            <img src={logo} alt="Toticone Logo" className="h-28 w-auto mx-auto mb-2" />
-            
+            <img 
+              src={logoUrl || defaultLogo} 
+              alt="Logo" 
+              className="h-28 w-auto mx-auto mb-2" 
+            />
           </div>
         </div>
 
-        {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-7xl mx-auto">
-          <MenuSection title="Burgers">
-            {menuData.Burgers?.length > 0 ? (
-              menuData.Burgers.map((item) => (
-                <MenuItem 
-                  key={item.id}
-                  name={item.name}
-                  description={item.description}
-                  price={item.price.toFixed(2)}
-                />
-              ))
-            ) : (
-              <p className="text-muted-foreground text-center py-4">No burgers available</p>
-            )}
-          </MenuSection>
-
-          <MenuSection title="Sandwiches">
-            {menuData.Sandwiches?.length > 0 ? (
-              menuData.Sandwiches.map((item) => (
-                <MenuItem 
-                  key={item.id}
-                  name={item.name}
-                  description={item.description}
-                  price={item.price.toFixed(2)}
-                />
-              ))
-            ) : (
-              <p className="text-muted-foreground text-center py-4">No sandwiches available</p>
-            )}
-          </MenuSection>
-        </div> */}
-
         {/* Menu Grid */}
-                <div className="grid grid-cols-3 gap-8 max-w-7xl mx-auto">
-                  {/* First Two Columns - Porzioni */}
-
-                  <div className="lg:col-span-1 space-y-8">
-                    
-                      <MenuSection title="Platters">
-                        {menuData.Platters?.length > 0 ? (
-                          menuData.Platters.map((item) => (
-                            <MenuItem 
-                              key={item.id}
-                              name={item.name}
-                              description={item.description}
-                              price={item.price.toFixed(2)}
-                            />
-                          ))
-                        ) : (
-                          <p className="text-muted-foreground text-center py-4">No Platters available</p>
-                        )}
-                      </MenuSection>
-                   </div>
-                  
-                    <div className="space-y-8">
-                  {/* Fritture Section */}
-                    <MenuSection title="Fritture">
-                      {menuData.Fritture?.length > 0 ? (
-                      <div className="grid   gap-x-6">
-                        {menuData.Fritture.map((item) => (
-                          <MenuItem
-                            key={item.id}
-                            name={item.name}
-                            description={item.description}
-                            price={item.price.toFixed(2)}
-                          />
-                        ))}
-                      </div>
-                    ) : (
-                      <p className="text-muted-foreground text-center py-4">
-                        No food items available
-                      </p>
-                    )}
-                    </MenuSection>
-                    </div>
-                  <div>
-                    <MenuSection title="Crostoni">
-                      {menuData.Crostoni?.length > 0 ? (
-                      menuData.Crostoni.map((item) => (
-                        <MenuItem 
-                          key={item.id}
-                          name={item.name}
-                          description={item.description}
-                          price={item.price.toFixed(2)}
-                        />
-                      ))
-                    ) : (
-                      <p className="text-muted-foreground text-center py-4">No burgers available</p>
-                    )}
-                    </MenuSection>
-                  </div>
-                  
+        <div className="grid grid-cols-3 gap-8 max-w-7xl mx-auto">
+          {/* First Column - Platters */}
+          <div className="lg:col-span-1 space-y-8">
+            <MenuSection title={plattersCategoryName}>
+              {menuData[plattersCategoryName]?.length > 0 ? (
+                menuData[plattersCategoryName].map((item) => (
+                  <MenuItem 
+                    key={item.id}
+                    name={item.name}
+                    description={item.description}
+                    price={item.price.toFixed(2)}
+                  />
+                ))
+              ) : (
+                <p className="text-muted-foreground text-center py-4">No items available</p>
+              )}
+            </MenuSection>
+          </div>
+          
+          {/* Second Column - Fritture */}
+          <div className="space-y-8">
+            <MenuSection title={frittureCategoryName}>
+              {menuData[frittureCategoryName]?.length > 0 ? (
+                <div className="grid gap-x-6">
+                  {menuData[frittureCategoryName].map((item) => (
+                    <MenuItem
+                      key={item.id}
+                      name={item.name}
+                      description={item.description}
+                      price={item.price.toFixed(2)}
+                    />
+                  ))}
                 </div>
-
-
+              ) : (
+                <p className="text-muted-foreground text-center py-4">
+                  No items available
+                </p>
+              )}
+            </MenuSection>
+          </div>
+          
+          {/* Third Column - Crostoni */}
+          <div>
+            <MenuSection title={crostoniCategoryName}>
+              {menuData[crostoniCategoryName]?.length > 0 ? (
+                menuData[crostoniCategoryName].map((item) => (
+                  <MenuItem 
+                    key={item.id}
+                    name={item.name}
+                    description={item.description}
+                    price={item.price.toFixed(2)}
+                  />
+                ))
+              ) : (
+                <p className="text-muted-foreground text-center py-4">No items available</p>
+              )}
+            </MenuSection>
+          </div>
+        </div>
       </div>
     </div>
   );
