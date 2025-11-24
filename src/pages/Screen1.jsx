@@ -82,7 +82,7 @@ const Screen1 = () => {
               className="h-28 w-auto mx-auto mb-2" 
             />
           </div>
-          <p className="text-muted-foreground mt-4 max-w-md mx-auto">GLI SPECIAL DI</p>
+          <p className="text-white mt-4 max-w-md mx-auto">GLI SPECIAL DI</p>
         </div>
 
         <div className="grid grid-cols-2 gap-8 max-w-7xl mx-auto">
