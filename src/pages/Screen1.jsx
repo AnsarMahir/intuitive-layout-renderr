@@ -52,7 +52,7 @@ const Screen1 = () => {
       style={{ backgroundColor: bgColor.color }}
     >
       {/* Background decorative elements with dynamic images */}
-      {images.S1I1 && (
+      {/* {images.S1I1 && (
         <div className="absolute top-12 left-10 z-0">
           <FoodCircle image={images.S1I1} alt="Delicious Burger" className="opacity-80" />
         </div>
@@ -71,10 +71,10 @@ const Screen1 = () => {
         <div className="absolute bottom-0 right-0 z-0">
           <FoodCircle image={images.S1I4} alt="Chocolate Dessert" className="opacity-80 scale-75" />
         </div>
-      )}
+      )} */}
 
       <div className="relative z-10 container mx-auto px-4 py-0">
-        <div className="text-center mb-12">
+        <div className="text-center mb-2">
           <div className="inline-block">
             <img 
               src={logoUrl || defaultLogo} 
@@ -82,7 +82,7 @@ const Screen1 = () => {
               className="h-28 w-auto mx-auto mb-2" 
             />
           </div>
-          <p className="text-muted-foreground mt-4 max-w-md mx-auto">GLI SPECIAL DI</p>
+          <p className="text-white max-w-md mx-auto mb-2">GLI SPECIAL DI</p>
         </div>
 
         <div className="grid grid-cols-2 gap-8 max-w-7xl mx-auto">

@@ -53,7 +53,7 @@ const Screen2 = () => {
       style={{ backgroundColor: bgColor.color }}
     >
       {/* Background decorative elements */}
-      {images.S2I1 && (
+      {/* {images.S2I1 && (
         <div className="absolute top-12 left-10 z-0">
           <FoodCircle image={images.S2I1} alt="Delicious Burger" className="opacity-80" />
         </div>
@@ -73,7 +73,7 @@ const Screen2 = () => {
         <div className="absolute bottom-0 right-0 z-0 ">
           <FoodCircle image={images.S2I4} alt="Chocolate Dessert" className="opacity-80 scale-75" />
         </div>
-      )}
+      )} */}
 
       <div className="relative z-10 container mx-auto px-4 py-0">
         {/* Header */}
