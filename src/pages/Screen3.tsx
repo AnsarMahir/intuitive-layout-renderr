@@ -9,12 +9,12 @@ const Screen3 = () => {
   // Use category ID 8 for Hotdog (note: BuildYourPanino handles its own data fetching)
   const categoryIds = [8];
    const {  loading: menuLoading, error: menuError, categoryNames } = useMenuData(categoryIds);
-  const { loading: imagesLoading, error: imagesError } = useScreenImages(3, 4);
+  //const { loading: imagesLoading, error: imagesError } = useScreenImages(3, 4);
   const { bgColor, loading: utilityLoading, error: utilityError } = useUtilitySettings();
   const { logoUrl, loading: logoLoading, error: logoError } = useLogo();
 
-  const loading = menuLoading || imagesLoading || logoLoading || utilityLoading;
-  const error = menuError || imagesError || logoError || utilityError;
+  const loading = menuLoading || logoLoading || utilityLoading;
+  const error = menuError || logoError || utilityError;
 
   if (loading) {
     return (
