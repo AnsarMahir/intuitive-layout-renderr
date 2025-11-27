@@ -8,8 +8,8 @@ import defaultLogo from "@/assets/logo.png";
 const Screen3 = () => {
   // Use category ID 8 for Hotdog (note: BuildYourPanino handles its own data fetching)
   const categoryIds = [8];
-  const { menuData, loading: menuLoading, error: menuError, categoryNames } = useMenuData(categoryIds);
-  const { images, loading: imagesLoading, error: imagesError } = useScreenImages(3, 4);
+   const {  loading: menuLoading, error: menuError, categoryNames } = useMenuData(categoryIds);
+  const { loading: imagesLoading, error: imagesError } = useScreenImages(3, 4);
   const { bgColor, loading: utilityLoading, error: utilityError } = useUtilitySettings();
   const { logoUrl, loading: logoLoading, error: logoError } = useLogo();
 
@@ -91,7 +91,7 @@ const Screen3 = () => {
           <div className="lg:col-span-3 space-y-8">
             <BuildYourPanino />
 
-            <MenuSection title={hotdogCategoryName}>
+            {/* <MenuSection title={hotdogCategoryName}>
               {menuData[hotdogCategoryName]?.length > 0 ? (
                 menuData[hotdogCategoryName].map((item) => (
                   <MenuItem 
@@ -104,7 +104,7 @@ const Screen3 = () => {
               ) : (
                 <p className="text-muted-foreground text-center py-4">No items available</p>
               )}
-            </MenuSection>
+            </MenuSection> */}
           </div>
 
           {/* You can add more product sections here in the future */}
