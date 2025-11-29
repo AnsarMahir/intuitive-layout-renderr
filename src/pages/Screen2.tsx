@@ -77,7 +77,7 @@ const Screen2 = () => {
 
       <div className="relative z-10 container mx-auto px-4 py-0">
         {/* Header */}
-        <div className="text-center mb-12">
+        <div className="text-center">
           <div className="inline-block">
             <img 
               src={logoUrl || defaultLogo} 
@@ -88,12 +88,12 @@ const Screen2 = () => {
         </div>
 
         {/* Menu Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+        <div className="flex gap-2  mx-auto">
           {/* First Two Columns - Porzioni */}
-          <div className="lg:col-span-2 space-y-8">
+          <div style={{ width: '55%' }} className="space-y-4">
             <MenuSection title={porzioniCategoryName}>
               {menuData[porzioniCategoryName]?.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4">
                   {menuData[porzioniCategoryName].map((item) => (
                     <MenuItem
                       key={item.id}
@@ -112,7 +112,7 @@ const Screen2 = () => {
           </div>
 
           {/* Third Column - Piadine & L'Insalatone */}
-          <div className="space-y-8">
+          <div style={{ width: '45%' }} className="space-y-2">
             <MenuSection title={piadineCategoryName}>
               {menuData[piadineCategoryName]?.length > 0 ? (
                 menuData[piadineCategoryName].map((item) => (

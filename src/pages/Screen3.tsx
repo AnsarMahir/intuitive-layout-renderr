@@ -75,20 +75,20 @@ const Screen3 = () => {
       
       <div className="relative z-10 container mx-auto px-4 py-0">
         {/* Header */}
-        <div className="text-center mb-12">
+        <div className="text-center ">
           <div className="inline-block">
             <img 
               src={logoUrl || defaultLogo} 
               alt="Logo" 
-              className="h-28 w-auto mx-auto mb-2"
+              className="h-28 w-auto mx-auto"
             />
           </div>
         </div>
 
         {/* Menu Grid */}
-        <div className="grid grid-cols-3 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        <div className="grid grid-cols-3 gap-8 max-w-6xl mx-auto">
           {/* Build Your Panino Section */}
-          <div className="lg:col-span-3 space-y-8">
+          <div className="lg:col-span-3">
             <BuildYourPanino />
 
             {/* <MenuSection title={hotdogCategoryName}>
