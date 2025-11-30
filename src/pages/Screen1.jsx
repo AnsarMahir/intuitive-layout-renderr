@@ -85,11 +85,11 @@ const Screen1 = () => {
           {/* <p className="text-white max-w-md mx-auto mb-2">GLI SPECIAL DI</p> */}
         </div>
 
-        <div className="grid grid-cols-2 gap-8 max-w-7xl mx-auto">
-          <div className="col-span-1 space-y-8">
+        <div className="flex gap-8 max-w-7xl mx-auto">
+         <div style={{ width: '60%' }}>
             <MenuSection title={burgerCategoryName}>
               {menuData[burgerCategoryName]?.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-1 gap-x-6">
+                <div className="gap-x-6">
                   {menuData[burgerCategoryName].map((item) => (
                     <MenuItem 
                       key={item.id}
@@ -104,10 +104,10 @@ const Screen1 = () => {
               )}
             </MenuSection>
           </div>
-          <div className="space-y-8 grid-cols-1">
+          <div className="w-1/2 space-y-8 ">
             <MenuSection title={sandwichCategoryName}>
               {menuData[sandwichCategoryName]?.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6">
+                <div className="grid grid-cols-2 gap-x-6">
                   {menuData[sandwichCategoryName].map((item) => (
                     <MenuItem 
                       key={item.id}
