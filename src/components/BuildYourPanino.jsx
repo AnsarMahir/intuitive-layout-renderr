@@ -55,7 +55,7 @@ const BuildYourPanino = () => {
                 <h3 className="text-xl font-bold text-restaurant-orange mb-4 text-center uppercase">
                   Carne
                 </h3>
-                <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-foreground">
+                <div className="grid grid-cols-2 gap-x-4 gap-y-0 text-foreground">
                   {groupedExtras.CARNE.map((item) => (
                     <div key={item.id} className="py-1 text-sm">
                       {item.name}
@@ -71,7 +71,7 @@ const BuildYourPanino = () => {
                 <h3 className="text-xl font-bold text-restaurant-orange mb-4 text-center uppercase">
                   Formaggi
                 </h3>
-                <div className="space-y-2 text-foreground">
+                <div className="space-y-0 text-foreground">
                   {groupedExtras.FORMAGGI.map((item) => (
                     <div key={item.id} className="py-1 text-sm">
                       {item.name}
@@ -87,7 +87,7 @@ const BuildYourPanino = () => {
                 <h3 className="text-xl font-bold text-restaurant-orange mb-4 text-center uppercase">
                   Contorno
                 </h3>
-                <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-foreground">
+                <div className="grid grid-cols-2 gap-x-4 gap-y-0 text-foreground">
                   {groupedExtras.CONTORNO.map((item) => (
                     <div key={item.id} className="py-1 text-sm">
                       {item.name}

@@ -11,8 +11,8 @@ export const MenuSection = ({ title, children, className = "" }: MenuSectionProp
   return (
     <Card className={`bg-card border-border p-6 ${className}`}>
       <div className="relative mb-6">
-        <div className="bg-gradient-to-r from-restaurant-orange to-restaurant-gold px-6 py-3 rounded-lg transform -rotate-1">
-          <h2 className="text-2xl font-bold text-restaurant-dark text-center uppercase tracking-wider">
+        <div className="bg-gradient-to-r from-restaurant-orange to-restaurant-gold px-6 py-3 rounded-lg ">
+          <h2 className="text-[18px] font-bold text-restaurant-dark text-center uppercase tracking-wider">
             {title}
           </h2>
         </div>
